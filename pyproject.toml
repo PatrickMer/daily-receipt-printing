@@ -1,0 +1,59 @@
+[project]
+name = "daily-receipt-printing"
+version = "0.1.0"
+description = "Daily personalized thermal receipt printer"
+requires-python = ">=3.12"
+dependencies = [
+    "python-escpos>=3.1",
+    "pyyaml",
+    "python-dotenv",
+    "requests",
+]
+
+[dependency-groups]
+dev = [
+    "black>=24.0",
+    "ruff>=0.8",
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+    "mypy>=1.13",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B", "SIM", "PTH", "RUF"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["core", "widgets"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--cov=src", "--cov-report=term-missing", "--cov-report=html:build/coverage", "--cov-fail-under=80", "--strict-markers", "-v"]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if __name__ == .__main__.", "if TYPE_CHECKING:"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+mypy_path = "src"
+packages = ["core", "widgets"]
+
+[[tool.mypy.overrides]]
+module = ["escpos.*"]
+ignore_missing_imports = true
