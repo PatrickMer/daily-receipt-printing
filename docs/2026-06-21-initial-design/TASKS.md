@@ -33,11 +33,12 @@
   - `logging.level`: "INFO"
   - `logging.file`: "logs/daily-receipt.log"
 
-- [ ] **Set up logging module** (`src/core/logging.py`)
-  - Configure from config.yaml values
-  - Dual handler: StreamHandler (stdout) + RotatingFileHandler
-  - Timestamped format with level, module, message
-  - Create log directory if not exists
+- [x] **Set up logging module** (`src/core/log_config.py`)
+  - Configure from config.yaml values via `setup_logging(config)` + `get_logger(name)`
+  - Dual handler: StreamHandler (stdout) + RotatingFileHandler (5MB, 5 backups)
+  - Format: `%(asctime)s [%(levelname)s] %(name)s: %(message)s`
+  - Creates log directory via pathlib if not exists
+  - Named `log_config.py` (not `logging.py`) to avoid shadowing stdlib
 
 - [ ] **Update `.gitignore`**
   - Add: `build/`, `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`, `.coverage`, `htmlcov/`, `logs/`, `.env`, `uv.lock` (or commit it — decide)
