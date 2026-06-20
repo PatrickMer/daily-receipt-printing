@@ -40,8 +40,9 @@
   - Creates log directory via pathlib if not exists
   - Named `log_config.py` (not `logging.py`) to avoid shadowing stdlib
 
-- [ ] **Update `.gitignore`**
-  - Add: `build/`, `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`, `.coverage`, `htmlcov/`, `logs/`, `.env`, `uv.lock` (or commit it — decide)
+- [x] **Update `.gitignore`**
+  - Added: `__pycache__/`, `*.pyc`, `.coverage`, `build/`, `.mypy_cache/`, `.pytest_cache/`, `.ruff_cache/`, `htmlcov/`, `logs/`, `.env`
+  - `uv.lock` is committed (needed for reproducible installs)
 
 ## Phase 1: Core Framework
 
