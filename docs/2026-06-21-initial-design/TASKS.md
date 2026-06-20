@@ -2,30 +2,30 @@
 
 ## Phase 0: Project Scaffolding
 
-- [ ] **Set up `pyproject.toml`** with `uv`
+- [x] **Set up `pyproject.toml`** with `uv`
   - Project metadata (name, version, requires-python >= 3.12)
-  - Runtime deps: `python-escpos>=3.1`, `pyyaml`, `python-dotenv`
+  - Runtime deps: `python-escpos>=3.1`, `pyyaml`, `python-dotenv`, `requests`
   - Dev deps: `black>=24.0`, `ruff>=0.8`, `pytest>=8.0`, `pytest-cov>=6.0`, `mypy>=1.13`
   - `[tool.black]`: line-length 88, target-version py312
   - `[tool.ruff]`: line-length 88, select E/W/F/I/N/UP/B/SIM/PTH/RUF, ignore E501
   - `[tool.pytest.ini_options]`: testpaths=tests, --cov=src, --cov-fail-under=80
-  - `[tool.mypy]`: strict=true, ignore_missing_imports for escpos
+  - `[tool.mypy]`: strict=true, mypy_path="src", packages=["core","widgets"], ignore_missing_imports for escpos
   - Run `uv sync` to generate `uv.lock`
 
-- [ ] **Create Makefile**
+- [x] **Create Makefile**
   - `format`: `uv run black src tests && uv run ruff check --fix src tests`
-  - `lint`: `uv run black --check src tests && uv run ruff check src tests && uv run mypy src`
+  - `lint`: `uv run black --check src tests && uv run ruff check src tests && uv run mypy` (no path args — uses pyproject.toml config)
   - `test`: `uv run pytest`
   - `build`: depends on lint + test
   - `run`: `uv run python src/core/main.py` (accepts RECEIPT arg)
   - `clean`: remove build/, caches, __pycache__
 
-- [ ] **Create `.env.example`**
-  - `GOOGLE_CALENDAR_ICAL_URL=https://calendar.google.com/calendar/ical/YOUR_EMAIL/private-XXXXX/basic.ics`
-  - (BiciMad: no secret needed if using GBFS/CityBikes)
+- [x] **Create `.env.example`**
+  - `GOOGLE_CALENDAR_ICAL_URL=https://calendar.google.com/calendar/ical/YOUR_CALENDAR_ID/private-XXXXXXXX/basic.ics`
+  - (BiciMad: no secret needed — CityBikes/GBFS have no auth)
   - (Weather: no secret needed — Open-Meteo has no auth)
 
-- [ ] **Create `config.yaml`** with defaults
+- [x] **Create `config.yaml`** with defaults
   - `printer.host`: "192.168.0.200"
   - `printer.port`: 9100
   - `printer.profile`: "TM-T20II"
