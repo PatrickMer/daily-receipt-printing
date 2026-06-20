@@ -52,9 +52,10 @@
   - `ActionList = list[ESCPOSAction]` type alias
   - Validation of action type against printer profile deferred to driver dispatch time
 
-- [ ] **Define `Context` dataclass** (`src/core/context.py`)
-  - Fields: `date: datetime.date`, `time: datetime.time`, `receipt_name: str`
-  - Created fresh each execution
+- [x] **Define `Context` dataclass** (`src/core/context.py`)
+  - Frozen dataclass: `date: datetime.date`, `time: datetime.time`, `receipt_name: str`
+  - Factory: `build_context(receipt_name: str) -> Context` captures current datetime
+  - Immutable — widgets cannot mutate shared context
 
 - [ ] **Define `Widget` ABC** (`src/widgets/widget.py`)
   - `widget_type: str` class variable (mandatory, maps to JSON "type")
