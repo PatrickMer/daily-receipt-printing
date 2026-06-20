@@ -1,9 +1,10 @@
 from escpos.printer import Network
 
+
 def demo():
     kitchen = Network("192.168.0.200", profile="TM-T20II")
     kitchen.text("Hello World this is a test.\n")
-    kitchen.barcode('4006381333931', 'EAN13', 64, 2, '', '')
+    kitchen.barcode("4006381333931", "EAN13", 64, 2, "", "")
     kitchen.qr("You can readme from your smartphone")
     kitchen.image("pap3rine-megamind.gif")
     kitchen.text("""
@@ -22,11 +23,12 @@ def demo():
     88888888888oo8888888888888888oo8888888888888
     88888888888888888888888888888888888888888888
     """)
-    kitchen.cut(mode='PART')
+    kitchen.cut(mode="PART")
 
 
 def main():
     demo()
+
 
 if __name__ == "__main__":
     main()
