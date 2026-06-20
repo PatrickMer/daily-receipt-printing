@@ -46,10 +46,11 @@
 
 ## Phase 1: Core Framework
 
-- [ ] **Define `ESCPOSAction` dataclass** (`src/core/actions.py`)
-  - Use a dataclass with `action: str` + `kwargs: dict` pattern, or individual typed dataclasses per action
-  - Validate action type against printer profile capabilities at dispatch time
-  - The driver maps each action to the corresponding `python-escpos` method call
+- [x] **Define `ESCPOSAction` dataclass** (`src/core/actions.py`)
+  - Abstract base class (ABC) with `action: str = field(init=False)`, set via `__post_init__` in each subclass
+  - Individual typed dataclasses per action: SetAction, TextAction, FeedAction, ImageAction, QRAction, BarcodeAction, CutAction
+  - `ActionList = list[ESCPOSAction]` type alias
+  - Validation of action type against printer profile deferred to driver dispatch time
 
 - [ ] **Define `Context` dataclass** (`src/core/context.py`)
   - Fields: `date: datetime.date`, `time: datetime.time`, `receipt_name: str`
