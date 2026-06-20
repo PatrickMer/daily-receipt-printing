@@ -1,0 +1,9 @@
+printer:
+  host: "192.168.0.200"
+  port: 9100
+  profile: "TM-T20II"
+  timeout: 10  # seconds
+
+logging:
+  level: "INFO"
+  file: "logs/daily-receipt.log"
