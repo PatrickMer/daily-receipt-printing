@@ -95,13 +95,14 @@
   - Columns from receipt config (printer-agnostic — no coupling to profile)
   - 11 tests, 100% coverage
 
-- [ ] **Implement printer driver** (`src/core/printer.py`)
-  - Construct `Network(host, port, timeout, profile)` from config
-  - Call `open()` explicitly for fast-fail
-  - `execute(actions: list[ESCPOSAction])`: iterate actions, call corresponding methods
-  - Call `set_with_default()` between widget action groups to reset formatting
-  - Wrap in try/finally to ensure `close()`
-  - For testing: accept `Dummy` printer instance (same interface)
+- [x] **Implement printer driver** (`src/core/printer.py`)
+  - `connect_printer(config)` constructs `Network(host, port, timeout, profile)` and calls `open()`
+  - `execute_actions(printer, actions)` dispatches each ESCPOSAction via isinstance to the correct printer method
+  - `_dispatch_action` handles all 7 action types; raises `ValueError` on unknown
+  - Calls `set_with_default()` after execution to reset formatting
+  - `print_actions(config, actions)` wraps in try/finally ensuring `close()`
+  - Accepts `Network | Dummy` for testability
+  - 22 tests, 100% coverage
 
 - [ ] **Wire up `print_receipt(receipt_path: str)`** (`src/core/engine.py`)
   - Load config → load receipt → validate secrets → build context → run widgets → apply layout → execute on printer
