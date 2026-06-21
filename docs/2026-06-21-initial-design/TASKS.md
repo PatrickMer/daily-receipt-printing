@@ -78,11 +78,13 @@
   - Module-level `load_dotenv()` loads `.env` on import
   - 16 tests, 100% coverage on config.py
 
-- [ ] **Implement widget runner** (`src/core/runner.py`)
-  - Iterate receipt widget list
+- [x] **Implement widget runner** (`src/core/runner.py`)
+  - `run_widgets(receipt_config, context)` iterates receipt widget list
   - For each: look up class via `Widget.get(type)`, instantiate, call `render(params, context)`
-  - Wrap each render in try/except — log error, append error placeholder text action, continue
-  - Return aggregated list of actions
+  - Entire per-widget block (including type/params extraction) wrapped in try/except for full failure isolation
+  - On failure: logs error, appends `TextAction` placeholder `"[widget '{type}' failed]"`, continues
+  - Returns aggregated flat list of actions
+  - 9 tests, 100% coverage
 
 - [ ] **Implement layout engine** (`src/core/layout.py`)
   - Read layout config from receipt JSON

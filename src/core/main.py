@@ -1,33 +1,10 @@
-from escpos.printer import Network
+"""CLI entry point for daily receipt printing."""
+
+from __future__ import annotations
 
 
-def demo():
-    kitchen = Network("192.168.0.200", profile="TM-T20II")
-    kitchen.text("Hello World this is a test.\n")
-    kitchen.barcode("4006381333931", "EAN13", 64, 2, "", "")
-    kitchen.qr("You can readme from your smartphone")
-    kitchen.image("pap3rine-megamind.gif")
-    kitchen.text("""
-    88888888888888888888888888888888888888888888
-    88888888888888888888888888888888888888888888
-    88888888888888888P""  ""98888888888888888888
-    88888888P"88888P          988888"98888888888
-    88888888  "9888            888P"  8888888888
-    8888888888bo "9  d8o  o8b  P" od888888888888
-    8888888888888bob 98"  "8P dod888888888888888
-    8888888888888888    db    888888888888888888
-    888888888888888888      88888888888888888888
-    888888888888888P"9bo  odP"988888888888888888
-    888888888888P" od88888888bo "988888888888888
-    8888888888   d88888888888888b   888888888888
-    88888888888oo8888888888888888oo8888888888888
-    88888888888888888888888888888888888888888888
-    """)
-    kitchen.cut(mode="PART")
-
-
-def main():
-    demo()
+def main() -> None:
+    """Entry point — will be wired up with argparse in a later task."""
 
 
 if __name__ == "__main__":
