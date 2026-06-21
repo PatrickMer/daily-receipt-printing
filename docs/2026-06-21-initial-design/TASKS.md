@@ -111,10 +111,11 @@
   - Printer connection errors (OSError) caught and logged without crashing
   - 13 tests, 100% coverage
 
-- [ ] **Wire up `main.py` CLI** (`src/core/main.py`)
-  - Accept receipt path as CLI argument (argparse)
-  - Call `print_receipt(receipt_path)`
-  - Exit code 0 on success, 1 on failure
+- [x] **Wire up `main.py` CLI** (`src/core/main.py`)
+  - argparse with positional `receipt` arg and optional `--config` (default: "config.yaml")
+  - Calls `print_receipt(receipt_path, config_path=config)`
+  - Exit code 0 on success, 1 on any exception (logged)
+  - 6 tests, 100% coverage
 
 ## Phase 2: Widgets
 
