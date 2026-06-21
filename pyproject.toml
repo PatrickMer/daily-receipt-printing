@@ -10,6 +10,9 @@ dependencies = [
     "requests",
 ]
 
+[project.optional-dependencies]
+calendar = ["icalendar", "recurring-ical-events"]  # calendar widget
+
 [dependency-groups]
 dev = [
     "black>=24.0",
@@ -56,4 +59,12 @@ packages = ["core", "widgets"]
 
 [[tool.mypy.overrides]]
 module = ["escpos.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["icalendar.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["recurring_ical_events.*"]
 ignore_missing_imports = true

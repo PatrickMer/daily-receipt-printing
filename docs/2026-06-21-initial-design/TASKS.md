@@ -139,14 +139,15 @@
   - All APIs fail → `[bicimad unavailable]` placeholder
   - 17 tests, 99% coverage
 
-- [ ] **Implement `calendar` widget** (`src/widgets/calendar.py`)
-  - `widget_type = "calendar"`
-  - `required_secrets = ["GOOGLE_CALENDAR_ICAL_URL"]`
-  - Add deps: `icalendar`, `recurring-ical-events`
-  - Fetch iCal URL from env, parse with icalendar
-  - Use `recurring_ical_events.of(cal).at(today)` to expand recurring events
-  - Format: time + summary for each event, sorted by start time
-  - Handle: fetch failure, parse error, empty calendar
+- [x] **Implement `calendar` widget** (`src/widgets/calendar.py`)
+  - `widget_type = "calendar"`, `required_secrets = ["GOOGLE_CALENDAR_ICAL_URL"]`
+  - Deps: `icalendar`, `recurring-ical-events` (optional extra: `uv sync --extra calendar`)
+  - Fetches iCal from `GOOGLE_CALENDAR_ICAL_URL` env var, parses with icalendar
+  - Expands recurring events via `recurring_ical_events.of(cal).at(context.date)`
+  - Sorts all-day events first, then timed events by start time
+  - Format: "All day  Summary" or "HH:MM  Summary", with "No events today" fallback
+  - All errors → `[calendar unavailable]` placeholder
+  - 12 tests, 100% coverage
 
 - [ ] **Implement `fun-fact` widget** (`src/widgets/fun_fact.py`)
   - `widget_type = "fun-fact"`
