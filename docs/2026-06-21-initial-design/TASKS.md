@@ -173,12 +173,11 @@
   - `--update-snapshots` pytest flag regenerates snapshot files
   - 2 tests + 1 conditional update test
 
-- [ ] **Cron setup documentation**
-  - Crontab entry: `0 8 * * 1-5 /path/to/uv run python /path/to/src/core/main.py /path/to/receipts/patrick.json >> /path/to/logs/cron.log 2>&1`
-  - Note: ensure `.env` is loaded (python-dotenv handles this in code)
-  - Note: use absolute paths in cron
+- [x] **Cron setup documentation** (`docs/CRON.md`)
+  - Crontab entry for 8am weekdays with absolute paths
+  - Prerequisites, installation, and troubleshooting guide
 
-- [ ] **Update CLAUDE.md** with final commands, architecture, and directory structure
+- [x] **Update CLAUDE.md** with final commands, architecture, and directory structure
 
 ## Phase 4: Stretch
 

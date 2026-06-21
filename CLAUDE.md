@@ -8,38 +8,46 @@ A daily receipt printer that generates personalized thermal receipts via an Epso
 
 ## Commands
 
+All commands use `make`. Run `make help` for a full list.
+
 ```bash
-# Run the main script
-python3 src/core/main.py
+make run RECEIPT=receipts/patrick.json   # Print a receipt
+make test                                # Run pytest
+make lint                                # Check formatting, lint, types (black + ruff + mypy)
+make format                              # Auto-fix formatting and lint issues
+make build                               # Full gate: lint + test
+make clean                               # Remove caches and build artifacts
 
-# Run tests
-python3 -m pytest tests/
-
-# Run a single test file
-python3 -m pytest tests/core/main_test.py
+# Update E2E snapshot baselines
+uv run pytest --update-snapshots
 ```
 
 ## Architecture
 
-The project uses a widget-based architecture where receipts are composed of independent widgets.
+Widget-based architecture. Core flow: load receipt config (JSON) -> run each widget's `render()` -> collect ESC/POS actions -> layout engine adds header/separators/cut -> printer driver dispatches to python-escpos.
 
-**Core flow:** Load user receipt config (JSON) → execute each widget's `render(config, context)` → collect ESC/POS actions → send to printer.
+- `src/core/` — framework: config loading, context, actions model, widget runner, layout engine, printer driver, engine orchestration, CLI entry point
+- `src/widgets/` — independent widgets (weather, bicimad, calendar, fun_fact, hello) auto-discovered via `__init_subclass__` + `pkgutil`
+- `receipts/` — JSON receipt configs defining which widgets to include
+- `tests/` — pytest suite with unit tests per module + E2E snapshot test
 
 **Key concepts:**
-- **Widgets** return a list of `ESCPOSAction` objects (text, barcode, cut, etc.) that map directly to `python-escpos` method calls. Widgets are printer-agnostic.
-- **Receipt configs** (JSON) define which widgets to include and their parameters. Each user has one receipt config.
-- **Global context** (date, time, username) is injected into every widget at execution time.
-- Widget failures are isolated — one failing widget doesn't block the rest of the receipt.
+- **Widgets** return `list[ESCPOSAction]` — printer-agnostic typed dataclasses
+- **Layout engine** wraps widget output with header/separators/cut
+- **Printer driver** dispatches actions to python-escpos (Network or Dummy)
+- **Widget autodiscovery** — drop a .py in `src/widgets/`, define `widget_type`, it's registered
+- **Failure isolation** — one widget failing doesn't block the rest
 
-**Printer library:** [python-escpos](https://github.com/python-escpos/python-escpos) with the `TM-T20II` profile. Connected via `escpos.printer.Network`.
+## Config
 
-## Planned Structure (from notes.md)
+- `config.yaml` — printer connection and logging settings
+- `.env` — secrets (GOOGLE_CALENDAR_ICAL_URL)
+- `receipts/*.json` — per-user receipt definitions
 
-```
-src/
-  core/           - main.py, generate_printable_receipt, connect_printer, load_configs
-  widgets/        - widget.py (base class), weather.py, bicimad.py, calendar.py, fun-fact.py
-receipts/         - user configs (e.g. patrick.json)
-schemas/          - JSON Schema for receipt and widget params
-tests/
-```
+## Key Files
+
+- `src/core/main.py` — CLI entry point
+- `src/core/engine.py` — orchestration (`print_receipt()`)
+- `src/widgets/widget.py` — Widget ABC
+- `config.yaml` — system config
+- `receipts/patrick.json` — example receipt
