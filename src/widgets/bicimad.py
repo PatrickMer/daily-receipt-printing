@@ -14,10 +14,10 @@ from widgets.widget import Widget
 logger = logging.getLogger(__name__)
 
 _GBFS_STATION_INFO_URL = (
-    "https://madrid.publicbikesystem.net/customer/gbfs/v3.0/en/station_information.json"
+    "https://madrid.publicbikesystem.net/customer/gbfs/v3.0/station_information"
 )
 _GBFS_STATION_STATUS_URL = (
-    "https://madrid.publicbikesystem.net/customer/gbfs/v3.0/en/station_status.json"
+    "https://madrid.publicbikesystem.net/customer/gbfs/v3.0/station_status"
 )
 _CITYBIKES_URL = "https://api.citybik.es/v2/networks/bicimad"
 _REQUEST_TIMEOUT = 10
@@ -106,36 +106,48 @@ def _fetch_citybikes() -> list[dict[str, Any]]:
     return stations
 
 
-def _match_stations(
-    all_stations: list[dict[str, Any]], substrings: list[str]
-) -> list[dict[str, Any]]:
-    """Match stations by substring (case-insensitive).
+def _extract_public_id(name: str) -> str | None:
+    """Extract the public station ID (leading number) from a station name.
 
-    For each configured substring, finds all matching stations.
+    Station names follow the pattern "295 - Hernani - Edgar Neville".
+    Returns the leading number as a string, or None if not found.
+    """
+    parts = name.split(" - ", maxsplit=1)
+    first = parts[0].strip()
+    if first.isdigit():
+        return first
+    return None
+
+
+def _match_stations(
+    all_stations: list[dict[str, Any]], station_ids: list[str | int]
+) -> list[dict[str, Any]]:
+    """Match stations by public ID (the number prefix in station names).
+
+    For each configured ID, finds the matching station.
     Skips stations where is_renting is False (with a warning).
-    Logs a warning and skips if a substring matches nothing.
+    Logs a warning and skips if an ID matches nothing.
 
     Returns:
-        De-duplicated list of matched stations preserving encounter order.
+        List of matched stations in the order requested.
     """
-    matched: list[dict[str, Any]] = []
-    seen_names: set[str] = set()
+    id_lookup: dict[str, dict[str, Any]] = {}
+    for station in all_stations:
+        public_id = _extract_public_id(station["name"])
+        if public_id is not None:
+            id_lookup[public_id] = station
 
-    for substring in substrings:
-        found = False
-        for station in all_stations:
-            if substring.lower() in station["name"].lower():
-                if not station["is_renting"]:
-                    logger.warning(
-                        "Station '%s' is not renting, skipping", station["name"]
-                    )
-                    continue
-                if station["name"] not in seen_names:
-                    matched.append(station)
-                    seen_names.add(station["name"])
-                found = True
-        if not found:
-            logger.warning("No stations matched substring '%s', skipping", substring)
+    matched: list[dict[str, Any]] = []
+    for station_id in station_ids:
+        key = str(station_id)
+        if key not in id_lookup:
+            logger.warning("No station matched ID '%s', skipping", key)
+            continue
+        station = id_lookup[key]
+        if not station["is_renting"]:
+            logger.warning("Station '%s' is not renting, skipping", station["name"])
+            continue
+        matched.append(station)
 
     return matched
 
@@ -150,15 +162,17 @@ class BiciMadWidget(Widget):
         """Render bike availability for matched stations.
 
         Params:
-            stations: List of station name substrings to match.
+            stations: List of public station IDs (the number shown in the app).
+            columns: Receipt width for name truncation (default 48).
         """
-        substrings: list[str] = params.get("stations", [])
+        station_ids: list[str | int] = params.get("stations", [])
+        columns: int = params.get("columns", 48)
 
         all_stations = self._fetch_stations()
         if all_stations is None:
             return list(_UNAVAILABLE)
 
-        matched = _match_stations(all_stations, substrings)
+        matched = _match_stations(all_stations, station_ids)
         if not matched:
             return list(_UNAVAILABLE)
 
@@ -168,9 +182,17 @@ class BiciMadWidget(Widget):
             SetAction(bold=False),
         ]
         for station in matched:
-            actions.append(
-                TextAction(content=f"{station['name']}: {station['bikes']} bikes\n")
-            )
+            bikes = station["bikes"]
+            prefix = f"{bikes:>2} bikes - "
+            name = station["name"]
+            # Strip the public ID prefix ("295 - ") from the display name
+            parts = name.split(" - ", maxsplit=1)
+            if len(parts) > 1 and parts[0].strip().isdigit():
+                name = parts[1]
+            max_name_len = columns - len(prefix)
+            if len(name) > max_name_len:
+                name = name[: max_name_len - 1] + "~"
+            actions.append(TextAction(content=f"{prefix}{name}\n"))
 
         return actions
 
