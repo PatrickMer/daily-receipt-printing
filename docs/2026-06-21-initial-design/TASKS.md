@@ -119,14 +119,15 @@
 
 ## Phase 2: Widgets
 
-- [ ] **Implement `weather` widget** (`src/widgets/weather.py`)
-  - `widget_type = "weather"`
-  - `required_secrets = []` (Open-Meteo needs no key)
-  - Params: `location` (city name or lat/lon), `fields` (temperature, precipitation, etc.), `hours` (how many hours to show)
-  - Use Open-Meteo geocoding API to resolve city name → lat/lon (cache or let user pass coords)
-  - Fetch: `https://api.open-meteo.com/v1/forecast?latitude=X&longitude=Y&hourly=temperature_2m,precipitation_probability,weathercode&timezone=Europe/Madrid&forecast_days=1`
-  - Format as table: hour | temp | rain% — using monospace text aligned to column width
-  - Handle: API timeout, malformed response
+- [x] **Implement `weather` widget** (`src/widgets/weather.py`)
+  - `widget_type = "weather"`, `required_secrets = []`
+  - Params: `latitude`/`longitude` (direct coords) or `location` (city name via geocoding), `hours` (default 12), `timezone` (default "Europe/Madrid")
+  - Geocoding via Open-Meteo `geocoding-api.open-meteo.com/v1/search`
+  - Forecast via `api.open-meteo.com/v1/forecast` (temperature, precipitation_probability, weathercode)
+  - Formats as fixed-width table: Hour | Temp | Rain% | Sky (weather code description)
+  - Filters to hours from current time onward; `fields` param omitted (all 3 columns fit 48-col receipt)
+  - All errors (timeout, connection, malformed response) → `[weather unavailable]` placeholder
+  - 16 tests, 99% coverage
 
 - [ ] **Implement `bicimad` widget** (`src/widgets/bicimad.py`)
   - `widget_type = "bicimad"`
