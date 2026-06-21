@@ -104,9 +104,12 @@
   - Accepts `Network | Dummy` for testability
   - 22 tests, 100% coverage
 
-- [ ] **Wire up `print_receipt(receipt_path: str)`** (`src/core/engine.py`)
-  - Load config → load receipt → validate secrets → build context → run widgets → apply layout → execute on printer
-  - Top-level try/except for printer connection errors → log and exit
+- [x] **Wire up `print_receipt(receipt_path: str)`** (`src/core/engine.py`)
+  - `print_receipt(receipt_path, config_path="config.yaml")` orchestrates full pipeline
+  - Load system config → load receipt → validate secrets → build context → run widgets grouped → apply layout → print
+  - `_run_widgets_grouped()` collects per-widget action lists for layout separator insertion
+  - Printer connection errors (OSError) caught and logged without crashing
+  - 13 tests, 100% coverage
 
 - [ ] **Wire up `main.py` CLI** (`src/core/main.py`)
   - Accept receipt path as CLI argument (argparse)
