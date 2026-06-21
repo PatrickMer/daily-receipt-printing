@@ -86,12 +86,14 @@
   - Returns aggregated flat list of actions
   - 9 tests, 100% coverage
 
-- [ ] **Implement layout engine** (`src/core/layout.py`)
-  - Read layout config from receipt JSON
-  - If `header`: prepend set(bold, center) + text(name + date) actions
-  - If `separator`: insert separator actions (dashes line at column width) between widget outputs
-  - If `cut_at_end`: append feed + cut actions
-  - Use `printer.profile.get_columns("a")` for separator width
+- [x] **Implement layout engine** (`src/core/layout.py`)
+  - `apply_layout(widget_action_groups, receipt_config, context)` wraps widget output with layout chrome
+  - Layout config from receipt JSON with defaults: `header=True`, `separator=True`, `cut_at_end=True`, `columns=48`
+  - Header: bold/center name + formatted date (`%A, %B %d, %Y`), then reset
+  - Separator: `"-" * columns + "\n"` between non-empty widget groups (and after header)
+  - Cut: `FeedAction(lines=3)` + `CutAction()` at end
+  - Columns from receipt config (printer-agnostic — no coupling to profile)
+  - 11 tests, 100% coverage
 
 - [ ] **Implement printer driver** (`src/core/printer.py`)
   - Construct `Network(host, port, timeout, profile)` from config
