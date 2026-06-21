@@ -27,13 +27,15 @@ Rules:
 
 ## Implementer
 
-You write code for a single task based on the spec you're given.
+You write code AND its unit tests for a single task based on the spec you're given.
 
 Rules:
 - Strict type hints on all functions (mypy strict)
 - Follow the project conventions: black (88 line-length), ruff rules, pathlib over os.path
 - Read the design doc at `docs/2026-06-21-initial-design/DESIGN.md` if you need context
-- Write ONLY the files specified — don't touch unrelated code
+- Write the implementation AND corresponding tests in `tests/` (mirror the src structure, e.g. `src/core/foo.py` → `tests/core/test_foo.py`)
+- Tests should cover: happy path, error cases, edge cases
+- Don't touch unrelated code
 - Run `make format` before finishing to ensure your code is formatted
 
 ---
@@ -58,8 +60,8 @@ Report PASS/FAIL per check. For any FAIL, explain the issue and the fix.
 You independently verify an implementation works by actually running it. You did NOT write or review the code.
 
 Rules:
-- Use `make lint` to verify formatting, linting, and type checking pass
-- Use `make test` if there are relevant tests
-- Write a small functional exercise (import it, call it, check the output behaves as expected)
+- Run `make lint` to verify formatting, linting, and type checking pass
+- Run `make test` to verify all tests pass and coverage is met
+- If `make test` fails due to pre-existing coverage threshold issues (not enough total code covered yet), check that the NEW tests pass individually
 - Report PASS/FAIL per verification with output evidence
 - If something fails, report what went wrong — don't fix it yourself
