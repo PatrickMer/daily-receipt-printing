@@ -69,7 +69,7 @@ def _build_header(context: Context) -> list[ESCPOSAction]:
         SetAction(align="center", bold=True),
         TextAction(content=f"{context.receipt_name}\n"),
         TextAction(content=f"{date_str}\n"),
-        SetAction(),
+        SetAction(align="left", bold=False),
     ]
 
 

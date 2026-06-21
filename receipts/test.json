@@ -1,0 +1,13 @@
+{
+  "name": "Patrick's Morning Brief",
+  "layout": {
+    "header": true,
+    "separator": true,
+    "cut_at_end": true,
+    "columns": 48
+  },
+  "widgets": [
+    {"type": "hello", "params": {"name": "Patrick"}},
+    {"type": "hello", "params": {"name": "Madrid"}}
+  ]
+}

@@ -17,7 +17,7 @@ test: ## Run pytest with coverage
 build: lint test ## Full validation gate (lint + test)
 
 run: ## Run the main script (use RECEIPT=path/to/receipt.json)
-	$(RUN) python src/core/main.py $(RECEIPT)
+	PYTHONPATH=src $(RUN) python src/core/main.py $(RECEIPT)
 
 clean: ## Remove build artifacts and caches
 	rm -rf build/ .mypy_cache/ .pytest_cache/ .ruff_cache/ htmlcov/
