@@ -1,0 +1,14 @@
+[
+  {"action": "set", "align": "center", "bold": true},
+  {"action": "text", "content": "Patrick's Morning Brief\n"},
+  {"action": "text", "content": "Thursday, January 15, 2026\n"},
+  {"action": "set", "align": "left", "bold": false},
+  {"action": "text", "content": "------------------------------------------------\n"},
+  {"action": "text", "content": "Hello, Patrick!\n"},
+  {"action": "text", "content": "Today is Thursday.\n"},
+  {"action": "text", "content": "------------------------------------------------\n"},
+  {"action": "text", "content": "Hello, Madrid!\n"},
+  {"action": "text", "content": "Today is Thursday.\n"},
+  {"action": "feed", "lines": 3},
+  {"action": "cut", "mode": "FULL"}
+]

@@ -158,24 +158,20 @@
 
 ## Phase 3: Quality & Polish
 
-- [ ] **Unit tests for core modules**
-  - `tests/core/test_actions.py` — action creation, validation
-  - `tests/core/test_config.py` — config loading, secret validation, missing file handling
-  - `tests/core/test_runner.py` — widget execution, failure isolation, context injection
-  - `tests/core/test_layout.py` — header/separator/cut generation
-  - `tests/core/test_printer.py` — action dispatch to Dummy printer, formatting reset
-  - `tests/core/test_engine.py` — end-to-end with Dummy printer + mocked widgets
+- [x] **Unit tests for core modules** (written alongside each implementation)
+  - `tests/core/test_actions.py`, `test_context.py`, `test_log_config.py`, `test_config.py`, `test_runner.py`, `test_layout.py`, `test_printer.py`, `test_engine.py`, `test_main.py`
 
-- [ ] **Unit tests for widgets**
-  - Mock HTTP responses (use `unittest.mock.patch` on `requests.get`)
-  - Test happy path + API failure + malformed response for each widget
-  - Verify returned actions are valid ESCPOSAction instances
+- [x] **Unit tests for widgets** (written alongside each implementation)
+  - `tests/widgets/test_weather.py`, `test_bicimad.py`, `test_calendar.py`, `test_fun_fact.py`
+  - Mock HTTP responses, happy path + failure + malformed for each
 
-- [ ] **E2E snapshot test** (stretch goal)
-  - Use `Dummy` printer to capture raw byte output
-  - Mock all external APIs with fixture data
-  - Assert action list matches saved snapshot (pytest-snapshot or manual JSON comparison)
-  - Enables "what would this receipt look like" without printing
+- [x] **E2E snapshot test**
+  - `tests/test_e2e_snapshot.py` runs full pipeline with fixed context (2026-01-15)
+  - Uses `hello` widget (pure, no API mocking needed) via `receipts/test.json`
+  - Compares action list JSON against `tests/snapshots/test_receipt.json`
+  - Compares Dummy printer raw bytes against `tests/snapshots/test_receipt_bytes.hex`
+  - `--update-snapshots` pytest flag regenerates snapshot files
+  - 2 tests + 1 conditional update test
 
 - [ ] **Cron setup documentation**
   - Crontab entry: `0 8 * * 1-5 /path/to/uv run python /path/to/src/core/main.py /path/to/receipts/patrick.json >> /path/to/logs/cron.log 2>&1`
