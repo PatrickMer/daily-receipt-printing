@@ -149,13 +149,12 @@
   - All errors → `[calendar unavailable]` placeholder
   - 12 tests, 100% coverage
 
-- [ ] **Implement `fun-fact` widget** (`src/widgets/fun_fact.py`)
-  - `widget_type = "fun-fact"`
-  - `required_secrets = []`
-  - Research at implementation time: Wikipedia "On this day", Useless Facts API, Quotable API
-  - Pick one that's free, no-auth, reliable
-  - Format: wrap text to column width using `textwrap`
-  - Handle: API failure → fallback to a hardcoded set of facts
+- [x] **Implement `fun-fact` widget** (`src/widgets/fun_fact.py`)
+  - `widget_type = "fun-fact"`, `required_secrets = []`
+  - Uses Useless Facts API (`uselessfacts.jsph.pl/api/v2/facts/random`, free, no auth)
+  - On API failure: deterministic fallback from 10 hardcoded facts (sha256 of date → stable index)
+  - Text wrapped to configurable `columns` (default 48) via `textwrap.fill()`
+  - 9 tests, 100% coverage
 
 ## Phase 3: Quality & Polish
 
