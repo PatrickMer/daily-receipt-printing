@@ -71,11 +71,12 @@
   - Wraps each import in try/except, logs failures via logger.exception, continues
   - Called at import time; re-exports `Widget`
 
-- [ ] **Implement config loader** (`src/core/config.py`)
-  - Load `config.yaml` with PyYAML
-  - Load `.env` with python-dotenv
-  - Load receipt JSON, validate structure
-  - Collect required_secrets from all widgets in the receipt, check env for each
+- [x] **Implement config loader** (`src/core/config.py`)
+  - `load_system_config(path)` — loads YAML, raises FileNotFoundError if missing
+  - `load_receipt_config(path)` — loads JSON, raises FileNotFoundError/ValueError
+  - `validate_secrets(receipt_config)` — collects all widget required_secrets, raises OSError listing ALL missing (deduplicated)
+  - Module-level `load_dotenv()` loads `.env` on import
+  - 16 tests, 100% coverage on config.py
 
 - [ ] **Implement widget runner** (`src/core/runner.py`)
   - Iterate receipt widget list
