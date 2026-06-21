@@ -19,6 +19,9 @@ build: lint test ## Full validation gate (lint + test)
 run: ## Run the main script (use RECEIPT=path/to/receipt.json)
 	PYTHONPATH=src $(RUN) python src/core/main.py $(RECEIPT)
 
+preview: ## Preview receipt as text (use RECEIPT=path/to/receipt.json)
+	PYTHONPATH=src $(RUN) python src/core/main.py --preview $(RECEIPT)
+
 clean: ## Remove build artifacts and caches
 	rm -rf build/ .mypy_cache/ .pytest_cache/ .ruff_cache/ htmlcov/
 	rm -f .coverage

@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
+from core.actions import TextAction
 from core.main import main
 
 
@@ -120,3 +121,57 @@ class TestMainCLI:
             main()
 
         mock_setup.assert_called_once_with(log_cfg)
+
+    def test_preview_flag_calls_generate_actions_and_render(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """--preview calls generate_actions + render_preview instead of print_receipt."""
+        m1, m2 = _patch_main()
+        fake_actions = [TextAction(content="hello\n")]
+        with (
+            patch("sys.argv", ["main.py", "--preview", "receipts/test.json"]),
+            m1,
+            m2,
+            patch("core.main.generate_actions", return_value=fake_actions) as mock_gen,
+            patch("core.main.render_preview", return_value="hello\n") as mock_render,
+            patch("core.main.print_receipt") as mock_print,
+        ):
+            main()
+
+        mock_gen.assert_called_once_with(
+            "receipts/test.json", config_path="config.yaml"
+        )
+        mock_render.assert_called_once_with(fake_actions)
+        mock_print.assert_not_called()
+
+    def test_preview_output_goes_to_stdout(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        """--preview prints the rendered preview to stdout."""
+        m1, m2 = _patch_main()
+        with (
+            patch("sys.argv", ["main.py", "--preview", "receipts/test.json"]),
+            m1,
+            m2,
+            patch("core.main.generate_actions", return_value=[]),
+            patch("core.main.render_preview", return_value="preview output\n"),
+        ):
+            main()
+
+        captured = capsys.readouterr()
+        assert "preview output" in captured.out
+
+    def test_without_preview_flag_calls_print_receipt(self) -> None:
+        """Without --preview, print_receipt is called normally."""
+        m1, m2 = _patch_main()
+        with (
+            patch("sys.argv", ["main.py", "receipts/test.json"]),
+            m1,
+            m2,
+            patch("core.main.print_receipt") as mock_print,
+            patch("core.main.generate_actions") as mock_gen,
+        ):
+            main()
+
+        mock_print.assert_called_once()
+        mock_gen.assert_not_called()

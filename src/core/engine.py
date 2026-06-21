@@ -18,6 +18,36 @@ from widgets.widget import Widget
 logger = logging.getLogger(__name__)
 
 
+def generate_actions(
+    receipt_path: str, config_path: str = "config.yaml"
+) -> list[ESCPOSAction]:
+    """Run the full pipeline and return actions without printing.
+
+    Executes config loading, widget rendering, and layout application but
+    stops before sending to the printer. Useful for preview mode.
+
+    Args:
+        receipt_path: Path to the receipt JSON configuration file.
+        config_path: Path to the system YAML configuration file.
+            Defaults to ``"config.yaml"``.
+
+    Returns:
+        Final list of ESC/POS actions ready for rendering or printing.
+
+    Raises:
+        FileNotFoundError: If the receipt or system config file is missing.
+        OSError: If required secrets are not set in the environment.
+    """
+    load_system_config(Path(config_path))  # validate config exists
+    receipt_config = load_receipt_config(Path(receipt_path))
+    validate_secrets(receipt_config)
+
+    context = build_context(receipt_config["name"])
+
+    widget_groups = _run_widgets_grouped(receipt_config, context)
+    return apply_layout(widget_groups, receipt_config, context)
+
+
 def print_receipt(receipt_path: str, config_path: str = "config.yaml") -> None:
     """Load configs, run widgets, apply layout, and print.
 

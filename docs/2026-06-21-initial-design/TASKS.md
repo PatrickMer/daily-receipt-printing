@@ -181,5 +181,11 @@
 
 ## Phase 4: Stretch
 
-- [ ] **Visual receipt preview** — render action list to a plain-text file mimicking 48-col receipt output
+- [x] **Visual receipt preview** (`src/core/preview.py`)
+  - `render_preview(actions, columns=48)` renders actions as plain text
+  - Tracks alignment/bold state: center/right alignment, bold → UPPERCASE
+  - Placeholders for QR/barcode/image actions
+  - `--preview` flag on main.py CLI + `make preview RECEIPT=...` target
+  - `generate_actions()` in engine.py runs pipeline without printing
+  - 21 tests, 100% coverage
 - [ ] **Receipt diff tool** — compare two snapshot outputs for regression detection
