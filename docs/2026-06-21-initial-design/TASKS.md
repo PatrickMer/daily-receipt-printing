@@ -129,15 +129,15 @@
   - All errors (timeout, connection, malformed response) → `[weather unavailable]` placeholder
   - 16 tests, 99% coverage
 
-- [ ] **Implement `bicimad` widget** (`src/widgets/bicimad.py`)
-  - `widget_type = "bicimad"`
-  - `required_secrets = []` (no auth needed)
-  - Params: `stations` (list of station name substrings to match)
-  - Primary: fetch GBFS v3.0 `station_information` + `station_status` from `madrid.publicbikesystem.net`, join on `station_id`
-  - Fallback: fetch CityBikes `https://api.citybik.es/v2/networks/bicimad` (single request)
-  - Match station names by substring (case-insensitive) — note GBFS names are localized arrays, extract `"es"` language entry
-  - Output: station name + available bikes count (`num_vehicles_available` from GBFS, `free_bikes` from CityBikes)
-  - Handle: API timeout, station not found (log warning, skip), `is_renting == false` stations
+- [x] **Implement `bicimad` widget** (`src/widgets/bicimad.py`)
+  - `widget_type = "bicimad"`, `required_secrets = []`
+  - Params: `stations` (list of station name substrings to match, case-insensitive)
+  - Primary: GBFS v3.0 from `madrid.publicbikesystem.net` (station_information + station_status joined on station_id)
+  - Fallback: CityBikes API (`api.citybik.es/v2/networks/bicimad`)
+  - Localized name extraction (prefers "es", falls back to first entry)
+  - Skips `is_renting=false` stations with logged warning; unmatched substrings logged and skipped
+  - All APIs fail → `[bicimad unavailable]` placeholder
+  - 17 tests, 99% coverage
 
 - [ ] **Implement `calendar` widget** (`src/widgets/calendar.py`)
   - `widget_type = "calendar"`
