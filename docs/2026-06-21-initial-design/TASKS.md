@@ -57,19 +57,19 @@
   - Factory: `build_context(receipt_name: str) -> Context` captures current datetime
   - Immutable — widgets cannot mutate shared context
 
-- [ ] **Define `Widget` ABC** (`src/widgets/widget.py`)
-  - `widget_type: str` class variable (mandatory, maps to JSON "type")
-  - `required_secrets: list[str] = []` class variable
-  - `_registry: dict[str, type[Widget]]` class variable
-  - `__init_subclass__` for auto-registration (skip abstract classes, enforce widget_type, reject duplicates)
-  - `render(self, params: dict, context: Context) -> list[ESCPOSAction]` abstract method
-  - `get(widget_type: str) -> type[Widget]` class method for lookup
+- [x] **Define `Widget` ABC** (`src/widgets/widget.py`)
+  - `widget_type: ClassVar[str]` (mandatory, maps to JSON "type")
+  - `required_secrets: ClassVar[list[str]] = []`
+  - `_registry: ClassVar[dict[str, type[Widget]]] = {}`
+  - `__init_subclass__` for auto-registration (skip abstract classes, enforce widget_type, reject duplicates with named error)
+  - `render(self, params: dict[str, Any], context: Context) -> list[ESCPOSAction]` abstract method
+  - `get(widget_type: str) -> type[Widget]` class method for lookup (raises KeyError)
 
-- [ ] **Implement widget autodiscovery** (`src/widgets/__init__.py`)
+- [x] **Implement widget autodiscovery** (`src/widgets/__init__.py`)
   - `discover_widgets()` using `pkgutil.iter_modules` on the widgets package directory
-  - Skip `_`-prefixed modules
-  - Wrap each import in try/except, log failures, continue loading others
-  - Call `discover_widgets()` in `__init__.py`
+  - Skips `_`-prefixed modules and the `widget` base module
+  - Wraps each import in try/except, logs failures via logger.exception, continues
+  - Called at import time; re-exports `Widget`
 
 - [ ] **Implement config loader** (`src/core/config.py`)
   - Load `config.yaml` with PyYAML
