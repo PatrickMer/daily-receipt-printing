@@ -5,8 +5,11 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from pathlib import Path
 
+from core.config import load_system_config
 from core.engine import print_receipt
+from core.log_config import setup_logging
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +24,9 @@ def main() -> None:
         help="Path to system config YAML (default: config.yaml)",
     )
     args = parser.parse_args()
+
+    system_config = load_system_config(Path(args.config))
+    setup_logging(system_config.get("logging", {}))
 
     try:
         print_receipt(args.receipt, config_path=args.config)

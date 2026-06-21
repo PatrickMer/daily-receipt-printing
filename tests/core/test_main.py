@@ -9,13 +9,24 @@ import pytest
 from core.main import main
 
 
+def _patch_main():
+    """Context manager stack that mocks load_system_config and setup_logging."""
+    return (
+        patch("core.main.load_system_config", return_value={"logging": {}}),
+        patch("core.main.setup_logging"),
+    )
+
+
 class TestMainCLI:
     """Tests for the main() CLI entry point."""
 
     def test_parses_receipt_positional_argument(self) -> None:
         """Receipt path is parsed from the first positional argument."""
+        m1, m2 = _patch_main()
         with (
             patch("sys.argv", ["main.py", "receipts/test.json"]),
+            m1,
+            m2,
             patch("core.main.print_receipt") as mock_print,
         ):
             main()
@@ -26,8 +37,11 @@ class TestMainCLI:
 
     def test_parses_optional_config_argument(self) -> None:
         """--config flag overrides the default config path."""
+        m1, m2 = _patch_main()
         with (
             patch("sys.argv", ["main.py", "receipts/test.json", "--config", "my.yaml"]),
+            m1,
+            m2,
             patch("core.main.print_receipt") as mock_print,
         ):
             main()
@@ -36,8 +50,11 @@ class TestMainCLI:
 
     def test_default_config_is_config_yaml(self) -> None:
         """Without --config, the default config path is 'config.yaml'."""
+        m1, m2 = _patch_main()
         with (
             patch("sys.argv", ["main.py", "receipts/patrick.json"]),
+            m1,
+            m2,
             patch("core.main.print_receipt") as mock_print,
         ):
             main()
@@ -48,17 +65,22 @@ class TestMainCLI:
 
     def test_exits_with_code_0_on_success(self) -> None:
         """Successful execution does not call sys.exit (implicit exit 0)."""
+        m1, m2 = _patch_main()
         with (
             patch("sys.argv", ["main.py", "receipts/test.json"]),
+            m1,
+            m2,
             patch("core.main.print_receipt"),
         ):
-            # Should not raise SystemExit
             main()
 
     def test_exits_with_code_1_on_exception(self) -> None:
         """sys.exit(1) is called when print_receipt raises an exception."""
+        m1, m2 = _patch_main()
         with (
             patch("sys.argv", ["main.py", "receipts/test.json"]),
+            m1,
+            m2,
             patch(
                 "core.main.print_receipt", side_effect=RuntimeError("printer on fire")
             ),
@@ -70,11 +92,14 @@ class TestMainCLI:
 
     def test_calls_print_receipt_with_correct_arguments(self) -> None:
         """print_receipt is called with receipt path and config_path keyword."""
+        m1, m2 = _patch_main()
         with (
             patch(
                 "sys.argv",
                 ["main.py", "receipts/daily.json", "--config", "prod.yaml"],
             ),
+            m1,
+            m2,
             patch("core.main.print_receipt") as mock_print,
         ):
             main()
@@ -82,3 +107,16 @@ class TestMainCLI:
         mock_print.assert_called_once_with(
             "receipts/daily.json", config_path="prod.yaml"
         )
+
+    def test_setup_logging_called_with_config(self) -> None:
+        """setup_logging is called with the logging section from system config."""
+        log_cfg = {"level": "DEBUG", "file": "logs/test.log"}
+        with (
+            patch("sys.argv", ["main.py", "receipts/test.json"]),
+            patch("core.main.load_system_config", return_value={"logging": log_cfg}),
+            patch("core.main.setup_logging") as mock_setup,
+            patch("core.main.print_receipt"),
+        ):
+            main()
+
+        mock_setup.assert_called_once_with(log_cfg)
